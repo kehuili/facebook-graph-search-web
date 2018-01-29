@@ -1,0 +1,74 @@
+.col-lav {
+background-color:lavender;
+}
+.col-blue {
+color:#3b5998;
+}
+.m20{
+	margin-left:10px;
+	margin-right:10px;
+}
+.mt10{
+	margin-top:8px;
+}
+.m10 {
+margin-left:10px;
+}
+.m200{
+	margin-right:250px;
+}
+.m5{
+margin-bottom:5px;
+margin-top:5px;
+}
+
+.p10{
+padding:0px 10px 0px 10px;
+}
+
+.h30 {
+     margin-top: 80px;
+}
+
+.vc{
+	position:absolute;
+	top:20%;
+}
+.profile{
+	width:40px;
+	height:40px;
+}
+.photo{
+	width:300px;
+	height:400px;
+}
+.hide{
+	display:none;
+}
+.fb{
+	width:20px;
+	height:18px;
+}
+.views.ng-enter{
+	animation:move 0.5s both;
+}
+
+/*.details{ 
+	animation:move 5s both;
+	-webkit-animation:move 5s both;
+	-moz-animation:move 5s both;
+}*/
+
+@keyframes move{
+	from {transform:translateX(-100%)}
+	to {transform:translateX(0)}
+}
+@-moz-keyframes move{
+	from {-moz-transform:translateX(-100%)}
+	to {-moz-transform:translateX(0)}
+}
+@-webkit-keyframes move{
+	from {-webkit-transform:translateX(-100%)}
+	to {-webkit-transform:translateX(0)}
+}
+

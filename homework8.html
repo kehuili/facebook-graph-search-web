@@ -1,0 +1,384 @@
+<!doctype html>
+<html>
+<head>
+<title>FB Search</title>
+<!-- maximun-scale=1.0,user-scalable=no -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="homework8.css" rel="stylesheet">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+<script type="text/javascript" src="homework8.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-sanitize.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+<!--script src="https://connect.facebook.net/en_US/sdk.js"></script-->
+<style>
+.btn-primary{
+background-color:#3b5998;
+border-radius:0;
+}
+.nav-pills > li > a {
+border-radius: 0;
+}
+.container-fluid{
+padding:0px;
+}
+.glyphicon-star{
+color:gold;
+}
+.nodata{
+background-color:AntiqueWhite ;
+border-color:grey;
+}
+.scrollt {
+min-width:600px;
+}
+</style>
+</head>
+
+<body>
+<div ng-app="myForm" ng-controller="formCtrl">
+<div class="container-fluid">
+	<div class="row col-lav">
+		<div class="col-blue col-sm-2 m10 mt10"><b>FB Search</b></div>
+		<form class="form-inline m5 col-sm-8">
+			<div class="form-group col-sm-8">
+				<label for="search" class="sr-only">FB Search</label>
+				<div class="input-group col-sm-8">
+					<input data-trigger="manual" data-toggle="tooltip" data-placement="bottom" title="Please type a keyword" ng-model="search" type="text" class="form-control input-sm" placeholder=" type something..." id="kw" name="keyword">
+					<div class="input-group-btn">
+					<button ng-click="searchfb()" id="search" class="btn btn-primary btn-block col-blue bk-blue btn-sm"><span class="glyphicon glyphicon-search"></button>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-2">
+			<button ng-click="reset()" class="btn btn-default btn-sm">Clear</button>
+			</div>
+		</form>
+	</div>
+	<div>
+	  <ul class="nav nav-pills nav-justified">
+		<li class="active"><a data-toggle="pill" href="#users">Users</a></li>
+		<li><a data-toggle="pill" href="#pages">Pages</a></li>
+		<li><a data-toggle="pill" href="#events">Events</a></li>
+		<li><a data-toggle="pill" href="#places">Places</a></li>
+		<li><a data-toggle="pill" href="#groups">Groups</a></li>
+		<li><a data-toggle="pill" href="#favorites">Favorites</a></li>
+	  </ul>
+	  <div ng-view class="views"></div>
+	  
+	</div>
+</div>
+
+<script type="text/ng-template" id="progress.html">
+	<div class='col-sm-6 col-sm-offset-3 h30'>
+		<div class='progress'>
+			<div class='progress-bar progress-bar-striped active' role='progressbar' aria-valuenow='50'aria-valuemin='0' aria-valuemax='100' style='width:50%'>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/ng-template" id="ct1.html">
+	<div class="scrollt">
+	<table class='table table-hover table-responsive'>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Profile Photo</th>
+				<th>Name</th>
+				<th>Favorite</th>
+				<th>Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="x in data">
+				<td>{{$index+1}}</td>
+				<td><img class="img-circle profile" src={{x.picture.data.url}}></td>
+				<td>{{x.name}}</td>
+				<td>
+					<button ng-init="checkf(x)" ng-click="changeClass(x,'users')" type="button" class="btn btn-default btn-sm">
+					<span ng-class="{'glyphicon-star' : x.toggled, 'glyphicon-star-empty' : !x.toggled}" class="glyphicon"></span>
+					</button>
+				</td>
+				<td>
+					<a href="#detail" ng-click="detail(x,x.id,x.picture.data.url,x.name,'users')" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	<div class="col-xs-offset-5">
+	<button ng-click="pre()" ng-class="{'hide':!previous}" class="btn btn-default">Previous</button>
+	<button ng-click="nex()" ng-class="{'hide':!next}" class="btn btn-default">Next</button>
+	</div>
+</script>
+<script type="text/ng-template" id="ct2.html">
+	<div class="scrollt">
+	<table class='table table-hover table-responsive'>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Profile Photo</th>
+				<th>Name</th>
+				<th>Favorite</th>
+				<th>Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="x in data2">
+				<td>{{$index+1}}</td>
+				<td><img class="img-circle profile" src={{x.picture.data.url}}></td>
+				<td>{{x.name}}</td>
+				<td>
+					<button ng-init="checkf(x)" ng-click="changeClass(x,'pages')" type="button" class="btn btn-default btn-sm">
+					<span ng-class="{'glyphicon-star' : x.toggled, 'glyphicon-star-empty' : !x.toggled}" class="glyphicon"></span>
+					</button>
+				</td>
+				<td>
+					<a href="#detail" ng-click="detail(x,x.id,x.picture.data.url,x.name,'pages')" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	<div class="col-xs-offset-5">
+	<button ng-click="pre2()" ng-class="{'hide':!previous2}" class="btn btn-default">Previous</button>
+	<button ng-click="nex2()" ng-class="{'hide':!next2}" class="btn btn-default">Next</button>
+	</div>
+</script>
+
+<script type="text/ng-template" id="ct3.html">
+	<div class="scrollt">
+	<table class='table table-hover table-responsive'>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Profile Photo</th>
+				<th>Name</th>
+				<th>Favorite</th>
+				<th>Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="y in data3">
+				<td>{{$index+1}}</td>
+				<td><img class="img-circle profile" src={{y.picture.data.url}}></td>
+				<td>{{y.name}}</td>
+				<td>
+					<button ng-init="checkf(y)" ng-click="changeClass(y,'events')" type="button" class="btn btn-default btn-sm">
+					<span ng-class="{'glyphicon-star' : y.toggled, 'glyphicon-star-empty' : !y.toggled}" class="glyphicon"></span>
+					</button>
+				</td>
+				<td>
+					<a href="#detail" ng-click="detail(y,y.id,y.picture.data.url,y.name,'events')" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	<div class="col-sm-offset-5">
+	<button ng-click="pre3()" ng-class="{'hide':!previous3}" class="btn btn-default">Previous</button>
+	<button ng-click="nex3()" ng-class="{'hide':!next3}" class="btn btn-default">Next</button>
+	</div>
+</script>
+<script type="text/ng-template" id="ct4.html">
+	<div class="scrollt">
+	<table class='table table-hover table-responsive'>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Profile Photo</th>
+				<th>Name</th>
+				<th>Favorite</th>
+				<th>Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="y in data4">
+				<td>{{$index+1}}</td>
+				<td><img class="img-circle profile" src={{y.picture.data.url}}></td>
+				<td>{{y.name}}</td>
+				<td>
+					<button ng-init="checkf(y)" ng-click="changeClass(y,'places')" type="button" class="btn btn-default btn-sm">
+					<span ng-class="{'glyphicon-star' : y.toggled, 'glyphicon-star-empty' : !y.toggled}" class="glyphicon"></span>
+					</button>
+				</td>
+				<td>
+					<a href="#detail" ng-click="detail(y,y.id,y.picture.data.url,y.name,'places')" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	<div class="col-sm-offset-5">
+	<button ng-click="pre4()" ng-class="{'hide':!previous4}" class="btn btn-default">Previous</button>
+	<button ng-click="nex4()" ng-class="{'hide':!next4}" class="btn btn-default">Next</button>
+	</div>
+</script>
+<script type="text/ng-template" id="ct5.html">
+	<div class="scrollt">
+	<table class='table table-hover table-responsive'>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Profile Photo</th>
+				<th>Name</th>
+				<th>Favorite</th>
+				<th>Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="y in data5">
+				<td>{{$index+1}}</td>
+				<td><img class="img-circle profile" src={{y.picture.data.url}}></td>
+				<td>{{y.name}}</td>
+				<td>
+					<button ng-init="checkf(y)" ng-click="changeClass(y,'groups')" type="button" class="btn btn-default btn-sm">
+					<span ng-class="{'glyphicon-star' : y.toggled, 'glyphicon-star-empty' : !y.toggled}" class="glyphicon"></span>
+					</button>
+				</td>
+				<td>
+					<a href="#detail" ng-click="detail(y, y.id,y.picture.data.url,y.name,'groups')" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	<div class="col-sm-offset-5">
+	<button ng-click="pre5()" ng-class="{'hide':!previous5}" class="btn btn-default hide">Previous</button>
+	<button ng-click="nex5()" ng-class="{'hide':!next5}" class="btn btn-default">Next</button>
+	</div>
+</script>
+<script type="text/ng-template" id="ct6.html">
+	<div class="scrollt">
+	<table class='table table-hover table-responsive'>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Profile Photo</th>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Favorite</th>
+				<th>Details</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="(key, y) in data6">
+				<td>{{$index+1}}</td>
+				<td><img class="img-circle profile" src={{y.picture.data.url}}></td>
+				<td>{{y.name}}</td>
+				<td>{{y.type}}</td>
+				<td>
+					<button ng-click="deletef(y)" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-trash"></span>
+					</button>
+				</td>
+				<td>
+					<a href="#detail" ng-click="detail(y,y.id,y.picture.data.url,y.name,y.type)" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+</script>
+
+<script type="text/ng-template" id="detail.html">
+<div class="m20 details">
+	<br/>
+	<div>
+	<button onClick="window.history.back()" class="btn btn-default">
+	<span class="glyphicon glyphicon-chevron-left"></span>Back
+	</button>
+	
+	<div class="pull-right">
+	<button ng-click="changeClass(d,d.type)" class="btn btn-default">
+	<span ng-class="{'glyphicon-star' : d.toggled, 'glyphicon-star-empty' : !d.toggled}" class="glyphicon"></span>
+	</button>
+	
+	<button class="btn btn-default">
+	<span><img ng-click="postfb(d)" class="fb" src="http://cs-server.usc.edu:45678/hw/hw8/images/facebook.png"></span>
+	</button>
+	</div>
+	
+	</div>
+	<br/>
+	
+	<br/>
+	<div class="row">
+		<div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Albums</div>
+			<div class="panel-body" ng-include="albumUrl"></div>
+		</div>
+		</div>
+		
+		<div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Posts</div>
+			<div class="panel-body" ng-include="postUrl"></div>
+		</div>
+		</div>
+	</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="nodata.html">
+	<div class="nodata"><br/>&nbsp  No data found<br/><br/></div>
+</script>
+
+<script type="text/ng-template" id="albums.html">
+<div class="panel-group" id = "accordion">
+	<div ng-repeat="x in albums" class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" data-parent="#accordion" data-target="#collapse{{x.id}}">{{x.name}}</a>
+			</h4>
+		</div>
+		<div id="collapse{{x.id}}" class="panel-collapse" ng-class="{'collapse in': $index==0, 'collapse':$Index!=0}">	
+		<div ng-repeat="y in x.photos.data">
+			<div class="panel-body"><img class="img-responsive" ng-init="getImg(y)" src={{y.iurl}}></div>
+		</div>
+		</div>
+	</div>
+</div>
+</script>
+
+<script type="text/ng-template" id="posts.html">
+<div class="panel-group">
+	<div ng-repeat="x in posts" class="panel panel-default">
+		<div class="panel-body">
+			<div class="row"><div class="col-xs-1"><img class="profile" src={{pro}}></div><div class="col-xs-11" ng-init="formatTime(x)"><b>{{name}}</b><br/><span class="text-muted">{{x.created_time}}</span></div></div>
+			<br/>
+			<div>{{x.message}}</div>
+		</div>
+	</div>
+</div>
+</script>
+
+</div>
+
+<NOSCRIPT>
+</body>
+</html>
